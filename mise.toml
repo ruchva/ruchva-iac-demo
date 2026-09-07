@@ -1,0 +1,52 @@
+[tools]
+terraform = "1.16.1"
+pipx = "latest"
+ansible = "14.3.1"
+
+[tasks."minimal:apply"]
+description = "Video 1: terraform init + apply del ejemplo mínimo"
+dir = "examples/minimal"
+run = """
+terraform init
+terraform apply
+"""
+
+[tasks."minimal:configure"]
+description = "Video 1: ansible-playbook imperativo sobre la instancia del ejemplo mínimo"
+dir = "examples/minimal"
+run = 'ansible-playbook -i "$(terraform output -raw public_ip)," -u ec2-user playbook.yml'
+
+[tasks."minimal:verify"]
+description = "Video 1: mostrar por SSH el resultado que dejó el playbook"
+dir = "examples/minimal"
+run = 'ssh ec2-user@"$(terraform output -raw public_ip)" cat hello-ansible.txt'
+
+[tasks."minimal:destroy"]
+description = "Video 1: destruir el ejemplo mínimo"
+dir = "examples/minimal"
+run = "terraform destroy"
+
+[tasks.init]
+description = "Video 2: terraform init en terraform/"
+dir = "terraform"
+run = "terraform init"
+
+[tasks.apply]
+description = 'Video 2: terraform apply (crea EC2 + EIP, escribe ansible/inventory.ini). Ej.: mise run apply -- -var="allowed_cidr=<tu-ip>/32"'
+dir = "terraform"
+run = "terraform apply"
+
+[tasks.deploy]
+description = 'Video 2: ansible-playbook para desplegar el stack. Ej.: mise run deploy -- --extra-vars "postgres_password=<una-contraseña>"'
+dir = "ansible"
+run = "ansible-playbook playbook.yml"
+
+[tasks.destroy]
+description = "Video 3: terraform destroy"
+dir = "terraform"
+run = "terraform destroy"
+
+[tasks."state-list"]
+description = "Video 3: verificar que no quede estado (debe salir vacío tras destroy)"
+dir = "terraform"
+run = "terraform state list"

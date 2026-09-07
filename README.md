@@ -1,4 +1,4 @@
-# muyu-iac-bootcamp
+# ruchva-iac-demo
 
 Repositorio de Infraestructura como Código para tres videos didácticos sobre
 **Terraform y Ansible**: (1) la diferencia entre ambos, (2) los dos
@@ -48,6 +48,40 @@ existe `muyu-invoice-infrastructure`.
 - Cuenta AWS con credenciales configuradas (región por defecto `us-east-1`).
 - Terraform >= 1.6 y Ansible >= 2.15.
 - Un par de claves SSH (`public_key_path`, por defecto `~/.ssh/id_ed25519.pub`).
+
+Este repo incluye un `mise.toml` que fija las versiones de Terraform y
+Ansible, además de tasks para cada video. Con [mise](https://mise.jdx.dev/)
+instalado, basta con:
+
+```bash
+mise install
+```
+
+para tener ambas herramientas disponibles en el `PATH` al entrar al
+directorio (requiere tener `mise activate` en tu shell, o usar `mise exec --
+<comando>`).
+
+`mise tasks` lista las tasks disponibles:
+
+| Task | Qué hace |
+|---|---|
+| `minimal:apply` | Video 1: `terraform init && terraform apply` en `examples/minimal/` |
+| `minimal:configure` | Video 1: corre el playbook contra la IP de esa instancia |
+| `minimal:verify` | Video 1: muestra por SSH el archivo que dejó el playbook |
+| `minimal:destroy` | Video 1: `terraform destroy` del ejemplo mínimo |
+| `init` | Video 2: `terraform init` en `terraform/` |
+| `apply` | Video 2: `terraform apply` en `terraform/` (crea EC2 + EIP, escribe `ansible/inventory.ini`) |
+| `deploy` | Video 2: `ansible-playbook playbook.yml` en `ansible/` |
+| `destroy` | Video 3: `terraform destroy` |
+| `state-list` | Video 3: `terraform state list` (debe quedar vacío) |
+
+`apply` y `deploy` reenvían los argumentos extra al comando, así que las
+variables se pasan igual que en la sección de uso:
+
+```bash
+mise run apply -- -var="allowed_cidr=<tu-ip>/32"
+mise run deploy -- --extra-vars "postgres_password=<una-contraseña>"
+```
 
 ## Estructura
 
