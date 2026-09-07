@@ -1,0 +1,28 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+*.tfplan
+tfplan.binary
+tfplan.json
+crash.log
+crash.*.log
+
+# Ansible
+ansible/inventory.ini
+*.retry
+.ansible
+
+# Apps clonadas localmente para build desde código fuente (ver apps/README.md)
+apps/*
+!apps/README.md
+
+# Claves SSH
+*.pem
+id_ed25519*
+id_rsa*
+
+# OS
+.DS_Store

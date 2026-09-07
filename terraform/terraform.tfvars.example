@@ -1,0 +1,8 @@
+# Copia este archivo a terraform.tfvars y ajústalo.
+# terraform.tfvars NO se sube a git (ver .gitignore).
+
+aws_region      = "us-east-1"
+instance_type   = "t3.small"
+allowed_cidr    = "0.0.0.0/0" # restringe a "<tu-ip>/32" antes de grabar
+public_key_path = "~/.ssh/id_ed25519.pub"
+project_name    = "muyu-iac-bootcamp"

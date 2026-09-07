@@ -1,0 +1,19 @@
+---
+- name: Configurar el host y desplegar el sistema de facturación del bootcamp
+  hosts: facturacion
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Verificar que se pasó postgres_password
+      ansible.builtin.assert:
+        that:
+          - postgres_password is defined
+        fail_msg: >-
+          Falta postgres_password. Corre:
+          ansible-playbook playbook.yml --extra-vars "postgres_password=algo-seguro"
+      run_once: true
+
+  roles:
+    - common
+    - facturacion

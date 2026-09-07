@@ -1,0 +1,77 @@
+# Generado por Ansible (role facturacion) — no editar a mano en el servidor.
+# Todos los servicios usan network_mode: host a propósito: el código de
+# muyu-invoice-generator apunta su SQS y su SMTP de desarrollo a
+# "localhost" de forma fija (no es configurable por variable de entorno),
+# igual que en el docker-compose.yml local del propio proyecto. Al compartir
+# el namespace de red del host, "localhost" significa lo mismo para los
+# cinco contenedores. Es la misma razón por la que no hay "ports:" aquí:
+# con network_mode host los puertos ya quedan expuestos directamente.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "{{ postgres_db }}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ postgres_user }} -d {{ postgres_db }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  localstack:
+    image: localstack/localstack:4.14.0
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      SERVICES: sqs
+      AWS_DEFAULT_REGION: us-east-1
+      LOCALSTACK_HOST: localhost
+      SQS_ENDPOINT_STRATEGY: path
+
+  mailpit:
+    image: axllent/mailpit:v1.30.3
+    restart: unless-stopped
+    network_mode: host
+
+  web:
+    image: "{{ app_image }}:{{ app_image_tag }}"
+    # Alternativa para construir desde el código fuente de la comunidad
+    # (ver apps/README.md) en lugar de usar la imagen publicada:
+    # build: /opt/facturacion/apps/muyu-invoice-generator
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      db:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+    environment:
+      NODE_ENV: demo
+      DATABASE_URL: "postgres://{{ postgres_user }}:{{ postgres_password | urlencode }}@localhost:5432/{{ postgres_db }}"
+      PORT: "{{ app_port }}"
+      OTEL_SDK_DISABLED: "{{ otel_sdk_disabled }}"
+
+  worker:
+    image: "{{ app_image }}:{{ app_image_tag }}"
+    # build: /opt/facturacion/apps/muyu-invoice-generator
+    command: ["node", "src/worker.js"]
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      db:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+    environment:
+      NODE_ENV: demo
+      DATABASE_URL: "postgres://{{ postgres_user }}:{{ postgres_password | urlencode }}@localhost:5432/{{ postgres_db }}"
+      METRICS_PORT: "{{ metrics_port }}"
+      OTEL_SDK_DISABLED: "{{ otel_sdk_disabled }}"
+
+volumes:
+  postgres_data:

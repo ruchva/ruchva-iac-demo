@@ -1,0 +1,19 @@
+---
+# EJEMPLO MÍNIMO (video 1): Ansible = imperativo.
+# Una sola tarea: describimos los PASOS a ejecutar sobre un recurso que ya
+# existe (creado por main.tf en este mismo directorio), no cómo debería
+# lucir el mundo.
+- name: Configurar el recurso creado por Terraform
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+  tasks:
+    - name: Dejar evidencia de que Ansible configuró este recurso
+      ansible.builtin.copy:
+        content: "Ansible configuró este servidor el {{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}\n"
+        dest: /home/ec2-user/hello-ansible.txt
+        owner: ec2-user
+        mode: "0644"

@@ -1,0 +1,27 @@
+---
+# Imagen de la comunidad AWS User Group La Paz (ver /CREDITS.md).
+# Un solo detalle importante: web y worker son la MISMA imagen; lo único
+# que cambia es el comando que corre dentro del contenedor.
+app_image: "ghcr.io/aws-user-group-la-paz/muyu-invoice-generator"
+app_image_tag: "latest"
+
+app_port: 3000
+metrics_port: 9464
+
+postgres_db: invoice_db
+postgres_user: invoice_user
+# postgres_password NO tiene default aquí a propósito: se exige por
+# --extra-vars en el momento del despliegue (ver README). El playbook falla
+# con un mensaje claro si no se pasa. Usa solo letras y números: se inserta
+# en una DATABASE_URL y una "/" en la contraseña rompería esa URL.
+
+sqs_queue_name: invoice-pdf-jobs
+localstack_port: 4566
+mailpit_smtp_port: 1025
+mailpit_ui_port: 8025
+
+# Sin esto, el contenedor intenta exportar traces/logs por OTLP a un
+# collector que no existe en esta demo y llena los logs de reintentos.
+otel_sdk_disabled: "true"
+
+docker_compose_cli_version: "v2.29.7"
