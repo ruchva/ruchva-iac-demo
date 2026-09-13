@@ -67,12 +67,12 @@ data "aws_ami" "al2023" {
 
 resource "aws_key_pair" "demo" {
   key_name   = "iac-minimal-demo-key"
-  public_key = file(var.public_key_path)
+  public_key = file(pathexpand(var.public_key_path))
 }
 
 resource "aws_security_group" "demo" {
   name        = "iac-minimal-demo-sg"
-  description = "Solo SSH, para el ejemplo mínimo del video 1"
+  description = "Solo SSH, para el ejemplo minimo del video 1"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {

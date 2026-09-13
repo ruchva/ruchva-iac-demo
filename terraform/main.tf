@@ -31,7 +31,7 @@ data "aws_ami" "al2023" {
 
 resource "aws_key_pair" "this" {
   key_name   = "${var.project_name}-key"
-  public_key = file(var.public_key_path)
+  public_key = file(pathexpand(var.public_key_path))
 }
 
 resource "aws_security_group" "this" {
@@ -48,7 +48,7 @@ resource "aws_security_group" "this" {
   }
 
   ingress {
-    description = "App web del sistema de facturación (Muyu)"
+    description = "App web del sistema de facturacion (Muyu)"
     from_port   = var.app_port
     to_port     = var.app_port
     protocol    = "tcp"

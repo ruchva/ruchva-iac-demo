@@ -162,3 +162,14 @@ Para construir desde el código fuente en lugar de usar la imagen publicada:
 Estado remoto de Terraform, balanceador/autoescalado/RDS gestionado, CI/CD,
 y cualquier mejora al código de las aplicaciones de la comunidad. Todo se
 ejecuta manualmente desde la máquina de quien graba.
+
+## Verificaciones ruchva
+
+- Video 1 (examples/minimal): minimal:apply, minimal:configure, minimal:verify, minimal:destroy
+- Video 2 (terraform/ + ansible/): init, apply, deploy
+- Video 3: destroy, state-list
+
+Video 1 — examples/minimal/ (declarativo vs. imperativo)
+
+minimal:apply
+- Consola AWS: EC2 → Instances: aparece iac-minimal-demo (t3.micro, "running"), con IP pública asignada. EC2 → Security Groups: iac-minimal-demo-sg con una sola regla de entrada (22/SSH). EC2
